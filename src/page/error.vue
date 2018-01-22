@@ -8,7 +8,7 @@
 
 <script>
   import { Msg, Divider, XButton } from 'vux'
-  import { CHANGE_LOADING, QUOTE_LIST_KEEP_ALIVE } from '@/store/mutation-type'
+  import { CHANGE_LOADING } from '@/store/mutation-type'
   import { JWT_HEADER } from '@/components/constant'
   export default {
     components: {
@@ -19,7 +19,6 @@
     created() {
       this.$vux.loading.hide()
       this.$store.commit(CHANGE_LOADING, { isLoading: false })
-      this.$store.commit(QUOTE_LIST_KEEP_ALIVE, { keepAlive: false })
     },
     data() {
       return {
@@ -28,7 +27,7 @@
     methods: {
       toHome() {
         let str = localStorage.getItem(JWT_HEADER)
-        str ? this.$router.push({ name: 'quoteList' }) : this.$router.push({ name: 'login' })
+        str ? this.$router.push({ name: 'home' }) : this.$router.push({ name: 'login' })
       }
     }
   }

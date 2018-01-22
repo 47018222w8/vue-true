@@ -14,19 +14,19 @@
     </x-header>
     <div class="c-body">
       <group :title="bodyTitle">
-        <cell>
+        <cell v-for="(item, index) in list" :key="index">
           <flexbox slot="after-title">
             <flexbox-item :span="4">
-              <p>组号:#0903</p>
+              <p>组号:#{{item.groupNo}}</p>
             </flexbox-item>
             <flexbox-item>
-              <p>1</p>
+              <p>{{item.startNum}}</p>
             </flexbox-item>
             <flexbox-item>
               <p>至</p>
             </flexbox-item>
             <flexbox-item>
-              <p>50</p>
+              <p>{{item.endNum}}</p>
             </flexbox-item>
           </flexbox>
         </cell>
@@ -40,10 +40,12 @@
   export default {
     data() {
       return {
-        tabIndex: 0
+        tabIndex: 0,
+        list: []
       }
     },
     created() {
+      this.getTab0()
     },
     computed: {
       bodyTitle() {
@@ -56,7 +58,22 @@
       }
     },
     methods: {
+      async getTab0() {
+        await this.$http.get('/list/pre/groupNo').then((response) => {
+          this.list = response.data
+        })
+      },
+      async getTab1() {
+        await this.$http.get('/list/done/groupNo').then((response) => {
+          this.list = response.data
+        })
+      },
       changeTab() {
+        if (this.tabIndex) {
+          this.getTab1()
+        } else {
+          this.getTab0()
+        }
       },
       back() {
         window.history.go(-1)

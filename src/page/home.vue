@@ -3,16 +3,16 @@
     <div class="c-title">
       <swiper auto height="150px">
         <swiper-item>
-          <img class="c-img" src="http://img1.gamersky.com/image2017/12/20171223_zl_91_1/gamersky_02small_04_201712231822516.jpg" width="100%" alt="">
+          <img src="http://192.168.1.136:9008/img/1.jpg" width="100%" alt="">
         </swiper-item>
         <swiper-item>
-          <img src="http://img1.gamersky.com/image2017/12/20171223_zl_91_2/gamersky_01small_02_201712231824864.jpg" width="100%" alt="">
+          <img src="http://192.168.1.136:9008/img/2.jpg" width="100%" alt="">
         </swiper-item>
       </swiper>
     </div>
     <flexbox :gutter="0" class="c-four-btn">
       <flexbox-item class="c-btn">
-        <div class="c-fa-div" style="background-color: #66cdee;">
+        <div class="c-fa-div" style="background-color: #66cdee;"  @click="$router.push({name:'codeA'})">
           <div class="c-fa-border">
             <i class="fa fa-unlock-alt fa-lg"></i>
           </div>
@@ -20,15 +20,15 @@
         <p>条码启用</p>
       </flexbox-item>
       <flexbox-item class="c-btn">
-        <div class="c-fa-div" style="background-color:#4fd3be;">
-          <div class="c-fa-border">
+        <div class="c-fa-div" style="background-color:#4fd3be;" >
+          <a class="c-fa-border" href="http://www.gamersky.com/ent/201712/997111_2.shtml">
             <i class="fa fa-rmb fa-lg"></i>
-          </div>
+          </a>
         </div>
         <p>条码购买</p>
       </flexbox-item>
       <flexbox-item class="c-btn">
-        <div class="c-fa-div" style="background-color:#fe9fb5;">
+        <div class="c-fa-div" style="background-color:#fe9fb5;"  @click="$router.push({name:'map'})">
           <div class="c-fa-border">
             <i class="fa fa-map-marker fa-lg"></i>
           </div>
@@ -36,7 +36,7 @@
         <p>扫码分布</p>
       </flexbox-item>
       <flexbox-item class="c-btn">
-        <div class="c-fa-div" style="background-color:#a0bdf5;">
+        <div class="c-fa-div" style="background-color:#a0bdf5;"  @click="$router.push({name:'codeList'})">
           <div class="c-fa-border">
             <i class="fa fa-home fa-lg"></i>
           </div>

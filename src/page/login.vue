@@ -3,19 +3,22 @@
     <p style="font-size:20px;text-align:center;padding-top:25%;">手机号登录</p>
     <br><br>
     <group :gutter="0">
-      <x-input :max="11" placeholder="请输入手机号" type="text" v-model="formData.uname"></x-input>
-      <x-input :max="4" placeholder="请输入验证码" :type="pwdShow?'text':'password'" v-model="formData.password">
-        <x-button slot="right" mini>获取验证码</x-button>
+      <x-input :max="11" placeholder="请输入手机号" type="tel" v-model="formData.mobile"></x-input>
+      <x-input :max="4" placeholder="请输入验证码" type="tel" v-model="formData.code">
+        <x-button slot="right" :disabled="codeDisabled" mini @click.native="getCode">{{codeText}}</x-button>
       </x-input>
     </group>
     <br>
-    <x-button type="primary" class="c-login-btn">登录</x-button>
-    <p class="c-bottom"><span>紧急冻结</span>|<span>联系客服</span></p>
+    <x-button type="primary" class="c-login-btn" :show-loading="loading" :disabled="loading" @click.native="submitForm">登录</x-button>
+    <p class="c-bottom">
+      <span>紧急冻结</span>|
+      <a :href="csTel">联系客服</a>
+    </p>
   </div>
 </template>
 
 <script>
-  import { JWT_TOKEN_HEAD, JWT_HEADER, CUSTOMER_SERVICE_TEL } from '@/components/constant'
+  import { JWT_TOKEN_HEAD, JWT_HEADER, CUSTOMER_SERVICE_TEL, RE_PHONE } from '@/components/constant'
   import { XInput, Group, XButton, Cell } from 'vux'
   import { QUOTE_LIST_KEEP_ALIVE } from '@/store/mutation-type'
   import axios from 'axios'
@@ -30,14 +33,14 @@
     data() {
       return {
         formData: {
-          uname: '',
-          password: '',
-          openId: ''
+          mobile: '',
+          code: ''
         },
+        codeText: '获取验证码',
+        codeDisabled: false,
         loading: false,
-        pwdShow: false,
-        message: '',
-        toast: false,
+        seconds: 60,
+        tiemer: null,
         csTel: 'tel:' + CUSTOMER_SERVICE_TEL
       }
     },
@@ -54,7 +57,7 @@
       async submitForm() {
         if (this.validate() && !this.loading) {
           this.loading = true
-          await this.$http.post('/noIntercept/sessions', this.formData).then((response) => {
+          await this.$http.post('/noIntercept/sessions/login/' + this.formData.mobile + '/' + this.formData.code).then((response) => {
             localStorage.setItem(JWT_HEADER, JWT_TOKEN_HEAD + response.data.token)
             axios.defaults.headers.common[JWT_HEADER] = JWT_TOKEN_HEAD + response.data.token
             this.$vux.toast.show({
@@ -64,7 +67,7 @@
             })
             setTimeout(() => {
               this.$router.push({
-                name: 'quoteList'
+                name: 'home'
               })
             }, 1400)
           }).catch((error) => {
@@ -77,19 +80,40 @@
           })
         }
       },
-      showPwd() {
-        this.pwdShow ? this.pwdShow = false : this.pwdShow = true
+      async getCode() {
+        if (RE_PHONE.test(this.formData.mobile)) {
+          this.codeDisabled = true
+          await this.$http.get('/noIntercept/sessions/code/' + this.formData.mobile + '/配件验真').then((response) => {
+            this.countDown()
+          })
+        } else {
+          this.$vux.toast.text('请输入正确的手机号', 'middle')
+        }
+      },
+      countDown() {
+        this.timer = setTimeout((e) => {
+          this.seconds--
+          if (this.seconds === 0) {
+            clearTimeout(this.timer)
+            this.codeDisabled = false
+            this.codeText = '获取验证码短信'
+            this.seconds = 60
+          } else {
+            this.codeText = this.seconds + '秒后获取验证码短信'
+            this.countDown()
+          }
+        }, 1000)
       },
       validate() {
-        if (this.formData.uname.trim() === '') {
+        if (!this.formData.mobile.trim()) {
           this.$vux.toast.show({
-            text: '请输入用户名',
+            text: '请输入手机号',
             type: 'text'
           })
           return false
-        } else if (this.formData.password.trim() === '') {
+        } else if (!this.formData.code.trim()) {
           this.$vux.toast.show({
-            text: '请输入密码',
+            text: '请输入验证码',
             type: 'text'
           })
           return false
@@ -117,8 +141,10 @@
     position: absolute;
     bottom: 20px;
     width: 100%;
-    span {
-      padding:0 10px;
+    span,
+    a {
+      padding: 0 10px;
+      color: @s-primary-color;
     }
   }
 }

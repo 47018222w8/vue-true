@@ -113,6 +113,20 @@ p {
     color: #fff;
   }
 }
+.s-header {
+  background-color: #fff;
+  .c-left {
+    color: @s-primary-color;
+  }
+  .c-right {
+    color: @s-primary-color;
+    border: 1px solid @s-primary-color;
+    border-radius: 6px;
+    p {
+      padding: 0px 6px;
+    }
+  }
+}
 //-----------------flex begin
 .display-flex(@display: flex) {
     & when (@display =flex) {
